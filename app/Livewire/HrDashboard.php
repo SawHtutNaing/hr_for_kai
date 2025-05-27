@@ -43,7 +43,7 @@ class HrDashboard extends Component
         if (Gate::allows('manage-hr')) {
             $leave = LeaveRequest::find($id);
             $leave->update(['status' => 'rejected', 'approved_by' => auth()->id()]);
-            $leave->user->notify(new LeaveRequestStatus($leave));
+            // $leave->user->notify(new LeaveRequestStatus($leave));
             $this->pendingLeaveRequests = LeaveRequest::where('status', 'pending')->latest()->take(5)->get();
             session()->flash('message', 'Leave request rejected and notification sent.');
         }

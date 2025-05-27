@@ -46,9 +46,9 @@
                 </div>
 
                 <div class="hidden md:flex items-center">
-                    <button class="bg-primary text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                        Get Quote
-                    </button>
+                    <a href='{{ route('login') }}' class="bg-primary text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                        login
+                    </a>
                 </div>
 
                 <!-- Mobile menu button -->

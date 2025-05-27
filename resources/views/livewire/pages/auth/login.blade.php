@@ -20,7 +20,19 @@ new #[Layout('layouts.guest')] class extends Component
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('divisions', absolute: false), navigate: true);
+        if(auth()->check()){
+            if(  auth()->user()->role_id == 1 ){
+                    $this->redirectIntended(default: route('hr-dashboard', absolute: false), navigate: false);
+
+        }
+
+        if(  auth()->user()->role_id == 2 ){
+                    $this->redirectIntended(default: route('employee-dashboard', absolute: false), navigate: false);
+
+        }
+        }
+
+
     }
 }; ?>
 
