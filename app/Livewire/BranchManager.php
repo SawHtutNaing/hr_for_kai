@@ -3,12 +3,15 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\Branch;
 use Illuminate\Support\Facades\Gate;
 
 class BranchManager extends Component
 {
-    public $name, $location;
+    use WithPagination;
+
+    public $name, $location, $search = '';
     public $branches;
     public $editingId;
 
@@ -19,7 +22,15 @@ class BranchManager extends Component
 
     public function mount()
     {
-        $this->branches = Branch::all();
+        $this->search();
+    }
+
+    public function search()
+    {
+        $this->resetPage();
+        $this->branches = Branch::where('name', 'like', '%' . $this->search . '%')
+            ->orWhere('location', 'like', '%' . $this->search . '%')
+            ->get();
     }
 
     public function create()
@@ -31,7 +42,7 @@ class BranchManager extends Component
                 'location' => $this->location,
             ]);
             $this->resetInput();
-            $this->branches = Branch::all();
+            $this->search();
             session()->flash('message', 'Branch created successfully.');
         }
     }
@@ -55,7 +66,7 @@ class BranchManager extends Component
                 'location' => $this->location,
             ]);
             $this->resetInput();
-            $this->branches = Branch::all();
+            $this->search();
             session()->flash('message', 'Branch updated successfully.');
         }
     }
@@ -64,7 +75,7 @@ class BranchManager extends Component
     {
         if (Gate::allows('manage-hr')) {
             Branch::find($id)->delete();
-            $this->branches = Branch::all();
+            $this->search();
             session()->flash('message', 'Branch deleted successfully.');
         }
     }

@@ -5,12 +5,12 @@
         </div>
     @endif
 
-    @if (auth()->user()->role->name === 'Employee')
+    {{-- @if (auth()->user()->role->name === 'Employee')
         <div class="mb-4">
             <button wire:click="checkIn" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Check In</button>
             <button wire:click="checkOut" class="bg-red-500 text-white px-4 py-2 rounded">Check Out</button>
         </div>
-    @endif
+    @endif --}}
 
     <table class="min-w-full divide-y divide-gray-200">
         <thead>
