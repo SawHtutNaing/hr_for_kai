@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'John Doe',
             'email' => 'john@example.com',
-            'password' => bcrypt('password'),
+            'password' => bcrypt('  '),
             'role_id' => Role::where('name', 'Employee')->first()->id,
             'division_id' => Division::where('name', 'Engineering')->first()->id,
             'branch_id' => Branch::where('name', 'Main Office')->first()->id,

@@ -13,19 +13,19 @@ use App\Livewire\EmployeeDashboard;
 use App\Livewire\HrDashboard;
 use App\Livewire\ReportManager;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ReportExportController;
+use App\Http\Controllers\LeaveRequestExportController;
 
-
-
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 });
 
 
-Route::middleware(['auth'])->group(function () {
+Route::get('/', function () {
+    return view('welcome');
+})->name('welcome');
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         if (auth()->user()->role->name === 'HR') {
             return redirect()->route('hr-dashboard');
@@ -44,6 +44,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance', AttendanceManager::class)->name('attendance');
     Route::get('/payroll', PayrollManager::class)->name('payroll');
     Route::get('/reports', ReportManager::class)->name('reports')->middleware('can:manage-hr');
+    // Route::get('/reports/export', [ReportExportController::class, 'exportCsv'])->name('reports.export')->middleware('can:manage-hr');
+      Route::get('/reports', ReportManager::class)->name('reports')->middleware('can:manage-hr');
+// Optional: Keep this if you want to maintain the controller-based export as a fallback
+Route::get('/reports/export', [ReportExportController::class, 'exportCsv'])->name('reports.export')->middleware('can:manage-hr');
+    Route::get('/leave-requests/export', [LeaveRequestExportController::class, 'exportCsv'])->name('leave-requests.export')->middleware('can:manage-hr');
 
     Route::post('/logout', function () {
         auth()->logout();
@@ -52,5 +57,4 @@ Route::middleware(['auth'])->group(function () {
         return redirect('/login');
     })->name('logout');
 });
-
 require __DIR__.'/auth.php';

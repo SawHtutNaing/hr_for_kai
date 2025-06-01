@@ -15,6 +15,7 @@ class EmployeeDashboard extends Component
     public $payrolls;
     public $canCheckIn;
     public $canCheckOut;
+    public $todayStatus;
 
     public function mount()
     {
@@ -27,21 +28,25 @@ class EmployeeDashboard extends Component
         $attendance = Attendance::where('user_id', $user->id)->where('date', $today)->first();
         $this->canCheckIn = !$attendance;
         $this->canCheckOut = $attendance && !$attendance->check_out;
+        $this->todayStatus = $attendance ? ($attendance->check_out ? 'Checked Out' : 'Checked In') : 'Not Checked In';
     }
 
     public function checkIn()
     {
         if (Gate::allows('manage-employee')) {
             $today = now()->toDateString();
-            Attendance::create([
-                'user_id' => auth()->id(),
-                'check_in' => now(),
-                'date' => $today,
-            ]);
-            $this->canCheckIn = false;
-            $this->canCheckOut = true;
-            $this->attendances = auth()->user()->attendances()->latest()->take(5)->get();
-            session()->flash('message', 'Checked in successfully.');
+            if (!Attendance::where('user_id', auth()->id())->where('date', $today)->exists()) {
+                Attendance::create([
+                    'user_id' => auth()->id(),
+                    'check_in' => now(),
+                    'date' => $today,
+                ]);
+                $this->canCheckIn = false;
+                $this->canCheckOut = true;
+                $this->todayStatus = 'Checked In';
+                $this->attendances = auth()->user()->attendances()->latest()->take(5)->get();
+                session()->flash('message', 'Checked in successfully.');
+            }
         }
     }
 
@@ -52,12 +57,13 @@ class EmployeeDashboard extends Component
             $attendance = Attendance::where('user_id', auth()->id())->where('date', $today)->first();
             if ($attendance && !$attendance->check_out) {
                 $checkIn = \Carbon\Carbon::parse($attendance->check_in);
-                $hoursWorked = now()->diffInHours($checkIn);
+                $hoursWorked = now()->diffInMinutes($checkIn) / 60; // Convert minutes to hours
                 $attendance->update([
                     'check_out' => now(),
-                    'hours_worked' => $hoursWorked,
+                    'hours_worked' => round($hoursWorked, 2),
                 ]);
                 $this->canCheckOut = false;
+                $this->todayStatus = 'Checked Out';
                 $this->attendances = auth()->user()->attendances()->latest()->take(5)->get();
                 session()->flash('message', 'Checked out successfully.');
             }
