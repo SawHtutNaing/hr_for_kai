@@ -13,6 +13,6 @@
         <li>Reason: {{ $reason }}</li>
     </ul>
     <p>Best regards,</p>
-    <p>Your Company Name</p>
+    <p>Myanmar Tech Solutions</p>
 </body>
 </html>
